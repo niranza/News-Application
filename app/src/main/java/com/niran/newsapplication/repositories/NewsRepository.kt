@@ -7,4 +7,7 @@ class NewsRepository(private val articleDao: ArticleDao, private val newsApi: Ne
 
     suspend fun getBreakingNews(countryCode: String, pageNumber: Int) =
         newsApi.getBreakingNews(countryCode, pageNumber)
+
+    suspend fun searchNews(searchQuery: String, pageNumber: Int) =
+        newsApi.searchForNews(searchQuery, pageNumber)
 }
