@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">News Application</string>
+    <string name="search_hint">Search…</string>
+    <string name="save">Save</string>
+    <string name="breaking_news">Breaking News</string>
+    <string name="saved_news">Saved News</string>
+    <string name="search_news">Search News</string>
+    <string name="article_image">Article Image</string>
+</resources>
