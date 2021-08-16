@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.databinding.FragmentBreakingNewsBinding
 import com.niran.newsapplication.utils.Resource
@@ -37,7 +38,9 @@ class BreakingNewsFragment : Fragment() {
         binding.apply {
 
             val articleAdapter = ArticleAdapter(object : ArticleAdapter.ArticleClickHandler {
-                override fun onItemClick(article: Article) {}
+                override fun onItemClick(article: Article) {
+                    navigateToArticleFragment(article)
+                }
             })
 
             rvBreakingNews.adapter = articleAdapter
@@ -71,6 +74,10 @@ class BreakingNewsFragment : Fragment() {
     private fun showProgressBar() {
         binding.pbPagination.visibility = View.VISIBLE
     }
+
+    private fun navigateToArticleFragment(article: Article) = view?.findNavController()?.navigate(
+        BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleFragment(article)
+    )
 
     override fun onDestroyView() {
         super.onDestroyView()

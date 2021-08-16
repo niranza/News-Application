@@ -6,4 +6,11 @@
     <string name="saved_news">Saved News</string>
     <string name="search_news">Search News</string>
     <string name="article_image">Article Image</string>
+    <string name="search_news_fragment_title">Search News</string>
+    <string name="breaking_news_fragment_title">Breaking News</string>
+    <string name="saved_news_fragment_title">Saved News</string>
+    <string name="article_fragment_title">Article</string>
+    <string name="article_saved">Article Saved</string>
+    <string name="article_deleted">Article Deleted</string>
+    <string name="undo">Undo</string>
 </resources>

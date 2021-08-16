@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.databinding.FragmentSearchNewsBinding
 import com.niran.newsapplication.utils.Constants
@@ -43,7 +44,9 @@ class SearchNewsFragment : Fragment() {
         binding.apply {
 
             val articleAdapter = ArticleAdapter(object : ArticleAdapter.ArticleClickHandler {
-                override fun onItemClick(article: Article) {}
+                override fun onItemClick(article: Article) {
+                    navigateToArticleFragment(article)
+                }
             })
 
             rvSearchNews.adapter = articleAdapter
@@ -86,6 +89,9 @@ class SearchNewsFragment : Fragment() {
     private fun showProgressBar() {
         binding.pbPagination.visibility = View.VISIBLE
     }
+
+    private fun navigateToArticleFragment(article: Article) = view?.findNavController()
+        ?.navigate(SearchNewsFragmentDirections.actionSearchNewsFragmentToArticleFragment(article))
 
     override fun onDestroyView() {
         super.onDestroyView()

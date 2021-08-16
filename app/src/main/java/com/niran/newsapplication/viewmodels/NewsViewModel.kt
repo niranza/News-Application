@@ -1,6 +1,7 @@
 package com.niran.newsapplication.viewmodels
 
 import androidx.lifecycle.*
+import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.data.models.NewsResponse
 import com.niran.newsapplication.repositories.NewsRepository
 import com.niran.newsapplication.utils.Resource
@@ -47,6 +48,13 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
         Resource.Error(message())
     }
 
+    fun insertArticle(article: Article) =
+        viewModelScope.launch { repository.insertArticle(article) }
+
+    fun deleteArticle(article: Article) =
+        viewModelScope.launch { repository.deleteArticle(article) }
+
+    val savedArticlesAsLiveData = repository.savedArticlesWithFlow.asLiveData()
 }
 
 class NewsViewModelFactory(private val repository: NewsRepository) : ViewModelProvider.Factory {
