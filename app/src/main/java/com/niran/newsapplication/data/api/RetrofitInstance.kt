@@ -1,6 +1,6 @@
 package com.niran.newsapplication.data.api
 
-import com.niran.newsapplication.utils.Constants.BASE_URL
+import com.niran.newsapplication.utils.Constants.Companion.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

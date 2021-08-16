@@ -43,7 +43,7 @@ class ArticleFragment : Fragment() {
 
             webView.apply {
                 webViewClient = WebViewClient()
-                loadUrl(article.url)
+                article.url?.let { loadUrl(it) }
             }
 
             fabSave.setOnClickListener { viewModel.insertArticle(article); showSnackBar() }

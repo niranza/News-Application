@@ -10,14 +10,14 @@ data class Article(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "article_id")
     val articleId: Long = 0L,
-    val author: String = "",
-    val content: String = "",
-    val description: String = "",
+    val author: String?,
+    val content: String?,
+    val description: String?,
     @ColumnInfo(name = "published_at")
-    val publishedAt: String = "",
-    val source: Source = Source(),
-    val title: String = "",
-    val url: String = "",
+    val publishedAt: String?,
+    val source: Source?,
+    val title: String?,
+    val url: String?,
     @ColumnInfo(name = "url_to_image")
-    val urlToImage: String = ""
+    val urlToImage: String?
 ) : Serializable
