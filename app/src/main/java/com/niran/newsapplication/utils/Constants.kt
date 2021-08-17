@@ -7,5 +7,6 @@ class Constants {
         const val SEARCH_NEWS_TIME_DELAY = 500L
         const val QUERY_PAGE_SIZE = 20
         const val DEFAULT_COUNTRY = "il"
+        const val RESPONSE_BODY_ERROR = "Response Body null"
     }
 }

@@ -1,10 +1,10 @@
 package com.niran.newsapplication.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.data.models.NewsResponse
 import com.niran.newsapplication.repositories.NewsRepository
+import com.niran.newsapplication.utils.Constants.Companion.RESPONSE_BODY_ERROR
 import com.niran.newsapplication.utils.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -30,6 +30,7 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
 
     fun refreshBreakingNews(countryCode: String) = viewModelScope.launch {
         breakingNewsPage = 1
+        breakingNewsResponse = null
         getBreakingNews(countryCode)
     }
 
@@ -50,13 +51,13 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
         response: Response<NewsResponse>
     ): Resource<NewsResponse> = with(response) {
         if (isSuccessful) body()?.let { result ->
-            Log.d("TAG", "")
             breakingNewsPage++
             if (breakingNewsResponse == null) breakingNewsResponse = result
             else breakingNewsResponse?.articles?.addAll(result.articles)
             return Resource.Success(breakingNewsResponse ?: result)
         }
-        Resource.Error(message())
+        val errorMessage = if (message().isEmpty()) RESPONSE_BODY_ERROR else message()
+        Resource.Error(errorMessage)
     }
 
     private fun handleSearchNewsResponse(
@@ -68,7 +69,8 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
             else searchNewsResponse?.articles?.addAll(result.articles)
             return Resource.Success(searchNewsResponse ?: result)
         }
-        Resource.Error(message())
+        val errorMessage = if (message().isEmpty()) RESPONSE_BODY_ERROR else message()
+        Resource.Error(errorMessage)
     }
 
     fun insertArticle(article: Article) =

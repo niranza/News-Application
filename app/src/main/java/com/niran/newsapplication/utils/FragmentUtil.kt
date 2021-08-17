@@ -4,5 +4,9 @@ import androidx.fragment.app.Fragment
 import com.niran.newsapplication.ui.NewsActivity
 import com.niran.newsapplication.viewmodels.NewsViewModel
 
-//Will throw an error if this can't cast to NewsActivity
-fun Fragment.newsViewModel(): NewsViewModel = (activity as NewsActivity).viewModel
+class FragmentUtil {
+    companion object {
+        //Will throw an error if this can't cast to NewsActivity
+        fun Fragment.newsViewModel(): NewsViewModel = (activity as NewsActivity).viewModel
+    }
+}

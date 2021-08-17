@@ -10,7 +10,7 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.niran.newsapplication.R
 import com.niran.newsapplication.databinding.FragmentArticleBinding
-import com.niran.newsapplication.utils.newsViewModel
+import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
 import com.niran.newsapplication.viewmodels.NewsViewModel
 
 

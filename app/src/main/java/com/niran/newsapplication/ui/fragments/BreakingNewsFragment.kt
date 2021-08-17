@@ -16,9 +16,9 @@ import com.niran.newsapplication.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.niran.newsapplication.utils.Resource
 import com.niran.newsapplication.utils.adapters.ArticleAdapter
 import com.niran.newsapplication.utils.adapters.shouldPaginate
-import com.niran.newsapplication.utils.getSharedPrefString
-import com.niran.newsapplication.utils.newsViewModel
-import com.niran.newsapplication.utils.setSharedPrefString
+import com.niran.newsapplication.utils.SharedPrefUtil.Companion.getSharedPrefString
+import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
+import com.niran.newsapplication.utils.SharedPrefUtil.Companion.setSharedPrefString
 import com.niran.newsapplication.viewmodels.NewsViewModel
 
 class BreakingNewsFragment : Fragment() {

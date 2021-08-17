@@ -13,7 +13,7 @@ import com.niran.newsapplication.R
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.databinding.FragmentSavedNewsBinding
 import com.niran.newsapplication.utils.adapters.ArticleAdapter
-import com.niran.newsapplication.utils.newsViewModel
+import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
 import com.niran.newsapplication.viewmodels.NewsViewModel
 
 

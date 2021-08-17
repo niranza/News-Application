@@ -15,7 +15,7 @@ import com.niran.newsapplication.utils.Constants
 import com.niran.newsapplication.utils.Resource
 import com.niran.newsapplication.utils.adapters.ArticleAdapter
 import com.niran.newsapplication.utils.adapters.shouldPaginate
-import com.niran.newsapplication.utils.newsViewModel
+import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
 import com.niran.newsapplication.viewmodels.NewsViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
