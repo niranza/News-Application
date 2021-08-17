@@ -2,14 +2,13 @@ package com.niran.newsapplication.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AbsListView
-import androidx.core.widget.addTextChangedListener
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.niran.newsapplication.R
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.databinding.FragmentSearchNewsBinding
 import com.niran.newsapplication.utils.Constants
@@ -34,6 +33,8 @@ class SearchNewsFragment : Fragment() {
     private var isLastPage = false
     private var isScrolling = false
 
+    private var currentSearchQuery = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +43,8 @@ class SearchNewsFragment : Fragment() {
         _binding = FragmentSearchNewsBinding.inflate(inflater)
 
         viewModel = newsViewModel()
+
+        setHasOptionsMenu(true)
 
         return binding.root
     }
@@ -70,20 +73,11 @@ class SearchNewsFragment : Fragment() {
                         super.onScrolled(recyclerView, dx, dy)
 
                         if (recyclerView.shouldPaginate(isLoading, isLastPage, isScrolling)) {
-                            viewModel.getSearchNews(etSearch.text.toString())
+                            viewModel.getSearchNews(currentSearchQuery)
                             isScrolling = false
                         }
                     }
                 })
-            }
-
-            var job: Job? = null
-            etSearch.addTextChangedListener { editable ->
-                job?.cancel()
-                job = MainScope().launch {
-                    delay(Constants.SEARCH_NEWS_TIME_DELAY)
-                    editable?.toString()?.let { if (it.isNotBlank()) viewModel.getSearchNews(it) }
-                }
             }
 
             viewModel.searchNews.observe(viewLifecycleOwner) { response ->
@@ -119,6 +113,37 @@ class SearchNewsFragment : Fragment() {
     private fun showProgressBar() {
         binding.pbPagination.visibility = View.VISIBLE
         isLoading = true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_news_menu, menu)
+
+        (menu.findItem(R.id.item_search).actionView as SearchView).apply {
+            queryHint = getString(R.string.search_hint)
+            isSubmitButtonEnabled = true
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    this@apply.clearFocus()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    currentSearchQuery = newText ?: ""
+                    searchWord(newText)
+                    return true
+                }
+            })
+        }
+    }
+
+    private var job: Job? = null
+    private fun searchWord(searchQuery: String?) {
+        job?.cancel()
+        job = MainScope().launch {
+            delay(Constants.SEARCH_NEWS_TIME_DELAY)
+            searchQuery?.let { if (it.isNotBlank()) viewModel.getSearchNews(it) }
+        }
     }
 
     private fun navigateToArticleFragment(article: Article) = view?.findNavController()

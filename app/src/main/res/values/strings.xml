@@ -1,4 +1,10 @@
 <resources>
+
+    <!--region boilerPlate Strings-->
+    <string name="breaking_news_pref_file_key">Breaking News Fragment</string>
+    <string name="country_key">Country Code</string>
+    <!--endregion boilerPlate Strings-->
+
     <string name="app_name">News Application</string>
     <string name="search_hint">Search…</string>
     <string name="save">Save</string>
@@ -13,4 +19,7 @@
     <string name="article_saved">Article Saved</string>
     <string name="article_deleted">Article Deleted</string>
     <string name="undo">Undo</string>
+    <string name="choose_country">Choose Country</string>
+    <string name="choose_country_dialog_title">I want to get news from</string>
+    <string name="no_saved_news">No Saved News</string>
 </resources>

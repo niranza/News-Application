@@ -1,5 +1,6 @@
 package com.niran.newsapplication.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.data.models.NewsResponse
@@ -20,32 +21,42 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
     var searchNewsPage = 1
     private var searchNewsResponse: NewsResponse? = null
 
+    private val _eventLoadBreakingNews = MutableLiveData(false)
+    val eventLoadBreakingNews: LiveData<Boolean> get() = _eventLoadBreakingNews
+
     init {
-        getBreakingNews("us")
+        _eventLoadBreakingNews.value = true
+    }
+
+    fun refreshBreakingNews(countryCode: String) = viewModelScope.launch {
+        breakingNewsPage = 1
+        getBreakingNews(countryCode)
     }
 
     fun getBreakingNews(countryCode: String) = viewModelScope.launch {
         _breakingNews.postValue(Resource.Loading())
         val response = repository.getBreakingNews(countryCode, breakingNewsPage)
         _breakingNews.postValue(handleBreakingNewsResponse(response))
-    }
-
-    private fun handleBreakingNewsResponse(
-        response: Response<NewsResponse>
-    ): Resource<NewsResponse> = with(response) {
-        if (isSuccessful) body()?.let { result ->
-            breakingNewsPage++
-            if (breakingNewsResponse == null) breakingNewsResponse = result
-            else breakingNewsResponse?.articles?.addAll(result.articles)
-            return Resource.Success(breakingNewsResponse ?: result)
-        }
-        Resource.Error(message())
+        _eventLoadBreakingNews.value = false
     }
 
     fun getSearchNews(searchQuery: String) = viewModelScope.launch {
         _searchNews.postValue(Resource.Loading())
         val response = repository.searchNews(searchQuery, searchNewsPage)
         _searchNews.postValue(handleSearchNewsResponse(response))
+    }
+
+    private fun handleBreakingNewsResponse(
+        response: Response<NewsResponse>
+    ): Resource<NewsResponse> = with(response) {
+        if (isSuccessful) body()?.let { result ->
+            Log.d("TAG", "")
+            breakingNewsPage++
+            if (breakingNewsResponse == null) breakingNewsResponse = result
+            else breakingNewsResponse?.articles?.addAll(result.articles)
+            return Resource.Success(breakingNewsResponse ?: result)
+        }
+        Resource.Error(message())
     }
 
     private fun handleSearchNewsResponse(

@@ -69,10 +69,17 @@ class SavedNewsFragment : Fragment() {
             }).apply { attachToRecyclerView(rvSavedNews) }
 
             viewModel.savedArticlesAsLiveData.observe(viewLifecycleOwner) { articles ->
-                articles?.let { articleAdapter.submitList(it) }
+                articles?.let {
+                    articleAdapter.submitList(it)
+                    if (it.isEmpty()) showNoSavedNews() else hideNoSavedNews()
+                }
             }
         }
     }
+
+    private fun showNoSavedNews() = binding.apply { tvNoSavedNews.visibility = View.VISIBLE }
+
+    private fun hideNoSavedNews() = binding.apply { tvNoSavedNews.visibility = View.GONE }
 
     private fun showSnackBar(article: Article) =
         Snackbar.make(binding.root, getString(R.string.article_deleted), Snackbar.LENGTH_LONG)

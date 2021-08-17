@@ -1,21 +1,24 @@
 package com.niran.newsapplication.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AbsListView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.niran.newsapplication.R
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.databinding.FragmentBreakingNewsBinding
+import com.niran.newsapplication.utils.Constants.Companion.DEFAULT_COUNTRY
 import com.niran.newsapplication.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.niran.newsapplication.utils.Resource
 import com.niran.newsapplication.utils.adapters.ArticleAdapter
 import com.niran.newsapplication.utils.adapters.shouldPaginate
+import com.niran.newsapplication.utils.getSharedPrefString
 import com.niran.newsapplication.utils.newsViewModel
+import com.niran.newsapplication.utils.setSharedPrefString
 import com.niran.newsapplication.viewmodels.NewsViewModel
 
 class BreakingNewsFragment : Fragment() {
@@ -29,6 +32,8 @@ class BreakingNewsFragment : Fragment() {
     private var isLastPage = false
     private var isScrolling = false
 
+    private var currentCountryCode = DEFAULT_COUNTRY
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,6 +42,10 @@ class BreakingNewsFragment : Fragment() {
         _binding = FragmentBreakingNewsBinding.inflate(inflater)
 
         viewModel = newsViewModel()
+
+        setHasOptionsMenu(true)
+
+        loadCountryCode()
 
         return binding.root
     }
@@ -65,7 +74,7 @@ class BreakingNewsFragment : Fragment() {
                         super.onScrolled(recyclerView, dx, dy)
 
                         if (recyclerView.shouldPaginate(isLoading, isLastPage, isScrolling)) {
-                            viewModel.getBreakingNews("us")
+                            viewModel.getBreakingNews(currentCountryCode)
                             isScrolling = false
                         }
                     }
@@ -93,6 +102,10 @@ class BreakingNewsFragment : Fragment() {
                     }
                 }
             }
+
+            viewModel.eventLoadBreakingNews.observe(viewLifecycleOwner) { load ->
+                load?.let { if (it) viewModel.getBreakingNews(currentCountryCode) }
+            }
         }
     }
 
@@ -106,6 +119,43 @@ class BreakingNewsFragment : Fragment() {
         pbPagination.visibility = View.VISIBLE
         isLoading = true
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
+        inflater.inflate(R.menu.breaking_news_menu, menu)
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.item_choose_country -> {
+            showCountryDialog()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun showCountryDialog() = with(AlertDialog.Builder(requireContext())) {
+        val countries = resources.getStringArray(R.array.countries)
+        setTitle(R.string.choose_country_dialog_title)
+        setItems(countries) { _, which ->
+            when (countries[which]) {
+                "Israel" -> saveCountryCode("il")
+                "U.S" -> saveCountryCode("us")
+                else -> return@setItems
+            }
+            viewModel.refreshBreakingNews(currentCountryCode)
+        }
+        show()
+    }
+
+    private fun saveCountryCode(countryCode: String) = requireContext().setSharedPrefString(
+        getString(R.string.breaking_news_pref_file_key),
+        getString(R.string.country_key),
+        countryCode
+    ).also { currentCountryCode = countryCode }
+
+    private fun loadCountryCode() = (requireContext().getSharedPrefString(
+        getString(R.string.breaking_news_pref_file_key),
+        getString(R.string.country_key),
+        DEFAULT_COUNTRY
+    )).also { currentCountryCode = it }
 
     private fun navigateToArticleFragment(article: Article) = view?.findNavController()?.navigate(
         BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleFragment(article)
