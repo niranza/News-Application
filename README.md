@@ -9,3 +9,5 @@ The app integrates:
 * Coroutines
 * Material Components and design principles
 * Lifecycle Dependencies
+* animations
+* menus
