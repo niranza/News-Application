@@ -8,5 +8,8 @@ class Constants {
         const val QUERY_PAGE_SIZE = 20
         const val DEFAULT_COUNTRY = "il"
         const val RESPONSE_BODY_ERROR = "Response Body null"
+        const val NO_INTERNET_CONNECTION_ERROR = "No internet Connection"
+        const val NETWORK_FAILURE = "Network Failure"
+        const val CONVERSION_ERROR = "Conversion Error"
     }
 }

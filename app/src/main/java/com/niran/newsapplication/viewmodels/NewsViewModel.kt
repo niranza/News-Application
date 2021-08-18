@@ -1,15 +1,25 @@
 package com.niran.newsapplication.viewmodels
 
+import android.app.Application
 import androidx.lifecycle.*
+import com.niran.newsapplication.NewsApplication
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.data.models.NewsResponse
 import com.niran.newsapplication.repositories.NewsRepository
+import com.niran.newsapplication.utils.Constants.Companion.CONVERSION_ERROR
+import com.niran.newsapplication.utils.Constants.Companion.NETWORK_FAILURE
+import com.niran.newsapplication.utils.Constants.Companion.NO_INTERNET_CONNECTION_ERROR
 import com.niran.newsapplication.utils.Constants.Companion.RESPONSE_BODY_ERROR
+import com.niran.newsapplication.utils.InternetUtil.Companion.hasInternetConnection
 import com.niran.newsapplication.utils.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.io.IOException
 
-class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
+class NewsViewModel(
+    private val repository: NewsRepository,
+    app: Application
+) : AndroidViewModel(app) {
 
     private val _breakingNews = MutableLiveData<Resource<NewsResponse>>()
     val breakingNews: LiveData<Resource<NewsResponse>> get() = _breakingNews
@@ -35,16 +45,46 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
     }
 
     fun getBreakingNews(countryCode: String) = viewModelScope.launch {
-        _breakingNews.postValue(Resource.Loading())
-        val response = repository.getBreakingNews(countryCode, breakingNewsPage)
-        _breakingNews.postValue(handleBreakingNewsResponse(response))
+        safeBreakingNewsCall(countryCode)
         _eventLoadBreakingNews.value = false
     }
 
     fun getSearchNews(searchQuery: String) = viewModelScope.launch {
+        safeSearchNewsCall(searchQuery)
+    }
+
+    private suspend fun safeBreakingNewsCall(countryCode: String) {
+        _breakingNews.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()) {
+                val response = repository.getBreakingNews(countryCode, breakingNewsPage)
+                _breakingNews.postValue(handleBreakingNewsResponse(response))
+            } else {
+                _breakingNews.postValue(Resource.Error(NO_INTERNET_CONNECTION_ERROR))
+            }
+        } catch (t: Throwable) {
+            when (t) {
+                is IOException -> _breakingNews.postValue(Resource.Error(NETWORK_FAILURE))
+                else -> _breakingNews.postValue(Resource.Error(CONVERSION_ERROR))
+            }
+        }
+    }
+
+    private suspend fun safeSearchNewsCall(searchQuery: String) {
         _searchNews.postValue(Resource.Loading())
-        val response = repository.searchNews(searchQuery, searchNewsPage)
-        _searchNews.postValue(handleSearchNewsResponse(response))
+        try {
+            if (hasInternetConnection()) {
+                val response = repository.searchNews(searchQuery, searchNewsPage)
+                _searchNews.postValue(handleSearchNewsResponse(response))
+            } else {
+                _searchNews.postValue(Resource.Error(NO_INTERNET_CONNECTION_ERROR))
+            }
+        } catch (t: Throwable) {
+            when (t) {
+                is IOException -> _searchNews.postValue(Resource.Error(NETWORK_FAILURE))
+                else -> _searchNews.postValue(Resource.Error(CONVERSION_ERROR))
+            }
+        }
     }
 
     private fun handleBreakingNewsResponse(
@@ -80,14 +120,19 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
         viewModelScope.launch { repository.deleteArticle(article) }
 
     val savedArticlesAsLiveData = repository.savedArticlesWithFlow.asLiveData()
+
+    private fun hasInternetConnection() = getApplication<NewsApplication>().hasInternetConnection()
 }
 
-class NewsViewModelFactory(private val repository: NewsRepository) : ViewModelProvider.Factory {
+class NewsViewModelFactory(
+    private val repository: NewsRepository,
+    private val app: Application
+) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return NewsViewModel(repository) as T
+            return NewsViewModel(repository, app) as T
         }
         throw IllegalArgumentException("Unknown ViewModel Class")
     }

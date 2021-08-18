@@ -1,7 +1,7 @@
 package com.niran.newsapplication.data.api
 
 import com.niran.newsapplication.data.models.NewsResponse
-import com.niran.newsapplication.utils.Constants
+import com.niran.newsapplication.utils.Constants.Companion.API_KEY
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -15,7 +15,7 @@ interface NewsApi {
         @Query("page")
         pageNumber: Int = 1,
         @Query("apiKey")
-        apiKey: String = Constants.API_KEY
+        apiKey: String = API_KEY
     ): Response<NewsResponse>
 
     @GET("v2/everything")
@@ -25,6 +25,6 @@ interface NewsApi {
         @Query("page")
         pageNumber: Int = 1,
         @Query("apiKey")
-        apiKey: String = Constants.API_KEY
+        apiKey: String = API_KEY
     ): Response<NewsResponse>
 }

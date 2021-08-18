@@ -11,14 +11,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.niran.newsapplication.R
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.databinding.FragmentBreakingNewsBinding
+import com.niran.newsapplication.utils.Constants
 import com.niran.newsapplication.utils.Constants.Companion.DEFAULT_COUNTRY
 import com.niran.newsapplication.utils.Constants.Companion.QUERY_PAGE_SIZE
+import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
+import com.niran.newsapplication.utils.FragmentUtil.Companion.showInternetConnectionError
 import com.niran.newsapplication.utils.Resource
+import com.niran.newsapplication.utils.SharedPrefUtil.Companion.getSharedPrefString
+import com.niran.newsapplication.utils.SharedPrefUtil.Companion.setSharedPrefString
 import com.niran.newsapplication.utils.adapters.ArticleAdapter
 import com.niran.newsapplication.utils.adapters.shouldPaginate
-import com.niran.newsapplication.utils.SharedPrefUtil.Companion.getSharedPrefString
-import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
-import com.niran.newsapplication.utils.SharedPrefUtil.Companion.setSharedPrefString
 import com.niran.newsapplication.viewmodels.NewsViewModel
 
 class BreakingNewsFragment : Fragment() {
@@ -81,6 +83,10 @@ class BreakingNewsFragment : Fragment() {
                 })
             }
 
+            viewModel.eventLoadBreakingNews.observe(viewLifecycleOwner) { load ->
+                load?.let { if (it) viewModel.getBreakingNews(currentCountryCode) }
+            }
+
             viewModel.breakingNews.observe(viewLifecycleOwner) { response ->
                 when (response) {
                     is Resource.Loading -> {
@@ -97,14 +103,14 @@ class BreakingNewsFragment : Fragment() {
                     is Resource.Error -> {
                         hideProgressBar()
                         response.message?.let { errorMessage ->
-                            Log.e(TAG, "Error with response: $errorMessage")
+                            when (errorMessage) {
+                                Constants.NO_INTERNET_CONNECTION_ERROR ->
+                                    showInternetConnectionError(rvBreakingNews)
+                                else -> Log.e(TAG, "Error with response: $errorMessage")
+                            }
                         }
                     }
                 }
-            }
-
-            viewModel.eventLoadBreakingNews.observe(viewLifecycleOwner) { load ->
-                load?.let { if (it) viewModel.getBreakingNews(currentCountryCode) }
             }
         }
     }

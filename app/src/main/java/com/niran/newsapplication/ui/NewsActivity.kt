@@ -28,7 +28,7 @@ class NewsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val newsRepository = (application as NewsApplication).newsRepository
-        val factory = NewsViewModelFactory(newsRepository)
+        val factory = NewsViewModelFactory(newsRepository, application)
         viewModel = ViewModelProvider(this, factory).get(NewsViewModel::class.java)
 
         val navHostFragment =

@@ -12,10 +12,11 @@ import com.niran.newsapplication.R
 import com.niran.newsapplication.data.models.Article
 import com.niran.newsapplication.databinding.FragmentSearchNewsBinding
 import com.niran.newsapplication.utils.Constants
+import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
+import com.niran.newsapplication.utils.FragmentUtil.Companion.showInternetConnectionError
 import com.niran.newsapplication.utils.Resource
 import com.niran.newsapplication.utils.adapters.ArticleAdapter
 import com.niran.newsapplication.utils.adapters.shouldPaginate
-import com.niran.newsapplication.utils.FragmentUtil.Companion.newsViewModel
 import com.niran.newsapplication.viewmodels.NewsViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -97,7 +98,11 @@ class SearchNewsFragment : Fragment() {
                     is Resource.Error -> {
                         hideProgressBar()
                         response.message?.let { errorMessage ->
-                            Log.e(TAG, "Error with response: $errorMessage")
+                            when (errorMessage) {
+                                Constants.NO_INTERNET_CONNECTION_ERROR ->
+                                    showInternetConnectionError(rvSearchNews)
+                                else -> Log.e(TAG, "Error with response: $errorMessage")
+                            }
                         }
                     }
                 }

@@ -22,4 +22,5 @@
     <string name="choose_country">Choose Country</string>
     <string name="choose_country_dialog_title">I want to get news from</string>
     <string name="no_saved_news">No Saved News</string>
+    <string name="no_internet_connection">No internet connection</string>
 </resources>
